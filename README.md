@@ -6,7 +6,7 @@
 ## Installation
 1. Download and install [BepInEx](https://github.com/BepInEx/BepInEx/releases) -> [How to install BepInEx](https://bepinex.github.io/bepinex_docs/master/articles/user_guide/installation/index.html?tabs=tabid-win)
 2. Download this mod
-3. Extract the .7z file in your newly created __"\PC Building Simulator\BepInEx\plugins\"__ folder [How it looks](https://i.imgur.com/WAG1oNj.png)
+3. Extract the .7z file in your newly created __"\PC Building Simulator\BepInEx\plugins\"__ folder ( [How it looks](https://i.imgur.com/WAG1oNj.png) )
 4. After running the game once with my mod installed a configuration file will be created at
     __"\PC Building Simulator\BepInEx\config\"__
 5. Open the config __org.bepinex.plugins.OnixPack.cfg__ with an Editor or Notepad++, etc.
