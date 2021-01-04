@@ -1,7 +1,7 @@
 ## Mods
 * Instant 3DMark
 * FPS Boost
-    - To activate FPS boost need press F11 in-game.
+    - To activate FPS boost need press __F11__ in-game.
     
 ## Installation
 1. Download and install [BepInEx](https://github.com/BepInEx/BepInEx/releases) -> [How to install BepInEx](https://bepinex.github.io/bepinex_docs/master/articles/user_guide/installation/index.html?tabs=tabid-win)
