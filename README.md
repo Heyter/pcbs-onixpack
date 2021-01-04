@@ -1,5 +1,7 @@
-# pcbs-onixpack
-PC Building Simulator - OnixPack - Mod
+## Mods
+* Instant 3DMark
+* FPS Boost
+    - To activate FPS boost need press F11 in-game.
 
 # License
 Copyright (C) 2020 Heyter
