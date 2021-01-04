@@ -8,7 +8,7 @@
 2. Download this mod
 3. Extract the .7z file in your newly created __"\PC Building Simulator\BepInEx\plugins\"__ folder
 4. After running the game once with my mod installed a configuration file will be created at
-    ___PC Building Simulator\BepInEx\config\___
+    __"PC Building Simulator\BepInEx\config\"__
 5. Open the config __org.bepinex.plugins.OnixPack.cfg__ with an Editor or Notepad++, etc.
 6. Change the value of "__Instant3DMark__" as you desire
 
