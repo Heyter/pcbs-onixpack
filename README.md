@@ -2,8 +2,11 @@
 * Instant 3DMark
 * FPS Boost
     - To activate FPS boost need press F11 in-game.
+    
+## Requirements
+* [Install BepInEx](https://bepinex.github.io/bepinex_docs/master/articles/user_guide/installation/index.html?tabs=tabid-win)
 
-# License
+## License
 Copyright (C) 2020 Heyter
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
