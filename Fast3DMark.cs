@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace OnixPack
 {
-	[HarmonyPatch(typeof(SaveLoadSystem), "LoadGame")]
+    [HarmonyPatch(typeof(SaveLoadSystem), "LoadGame")]
     internal sealed class Fast3DMark
     {
         [HarmonyPostfix]
