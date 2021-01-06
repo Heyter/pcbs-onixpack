@@ -7,11 +7,16 @@ using UnityEngine.PostProcessing;
 
 namespace OnixPack
 {
-    [BepInPlugin(MOD_GUID, MOD_NAME, "1.0.1")]
+    [BepInPlugin(MOD_GUID, MOD_NAME, "1.0.2")]
     public class ModEntryPoint : BaseUnityPlugin
     {
         public const string MOD_NAME = "OnixPack";
         public const string MOD_GUID = "org.bepinex.plugins." + MOD_NAME;
+
+        public static ConfigEntry<bool> instant3DMark;
+        private bool fpsBoost = false;
+        private float fpsBoostTime = 0.0f;
+
         internal void Awake()
         {
             instant3DMark = base.Config.Bind("General", "Instant3DMark", true, "Instant 3DMark");
@@ -71,10 +76,13 @@ namespace OnixPack
                 QualitySettings.lodBias = 0.3f;
                 QualitySettings.resolutionScalingFixedDPIFactor = 0.5f;
                 QualitySettings.maxQueuedFrames = 0;
+                QualitySettings.realtimeReflectionProbes = false;
+
                 // TODO: cakeslice.OutlineEffect eats a lot of FPS.
                 /*OutlineEffect.Instance.lineThickness = 0.5f;
 				OutlineEffect.Instance.lineIntensity = 0.05f;
 				OutlineEffect.Instance.fillAmount = 0.05f;*/
+
                 QualitySettings.particleRaycastBudget = 0;
                 QualitySettings.softParticles = false;
                 QualitySettings.maximumLODLevel = 0;
@@ -91,11 +99,6 @@ namespace OnixPack
 
                 fpsBoost = true;
             }
-
         }
-
-        public static ConfigEntry<bool> instant3DMark;
-        private bool fpsBoost = false;
-        private float fpsBoostTime = 0.0f;
     }
 }
