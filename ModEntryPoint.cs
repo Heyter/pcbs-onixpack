@@ -112,41 +112,5 @@ namespace OnixPack
             if (Input.GetKeyDown(KeyCode.F11))
                 this.FPSBoost();
         }
-
-        /* private const float TitleWidth = 240f;
-         private Vector2 m_ScrollPosition = Vector2.zero;
-
-         private void OnGUI()
-         {
-             m_ScrollPosition = GUILayout.BeginScrollView(m_ScrollPosition);
-             {
-                 GUILayout.Label("<b>Cameras</b>");
-                 GUILayout.BeginVertical("box");
-                 {
-                     for (int i = 0; i < Camera.allCamerasCount; i++)
-                     {
-                         Camera camera = Camera.allCameras[i];
-                         DrawItem("Name:", camera.ToString());
-                     }
-
-                    GameObject main = GameObject.FindGameObjectWithTag("MainCamera");
-
-                    if (main)
-                        DrawItem("Name#2:", main.ToString());
-                }
-                 GUILayout.EndVertical();
-             }
-             GUILayout.EndScrollView();
-         }
-
-         protected void DrawItem(string title, string content)
-         {
-             GUILayout.BeginHorizontal();
-             {
-                 GUILayout.Label(title, GUILayout.Width(TitleWidth));
-                 GUILayout.Label(content);
-             }
-             GUILayout.EndHorizontal();
-         } */
     }
 }
