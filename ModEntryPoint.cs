@@ -4,18 +4,26 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.PostProcessing;
+using UnityEngine.SceneManagement;
 
 namespace OnixPack
 {
-    [BepInPlugin(MOD_GUID, MOD_NAME, "1.0.2")]
+    [BepInPlugin(MOD_GUID, MOD_NAME, MOD_VERSION)]
     public class ModEntryPoint : BaseUnityPlugin
     {
-        public const string MOD_NAME = "OnixPack";
-        public const string MOD_GUID = "org.bepinex.plugins." + MOD_NAME;
+        const string MOD_NAME = "OnixPack";
+        const string MOD_GUID = "org.bepinex.plugins." + MOD_NAME;
+        const string MOD_VERSION = "1.0.4";
+
+        public static BepInEx.Logging.ManualLogSource log;
+
+        private ModEntryPoint()
+        {
+            log = Logger;
+            log.LogMessage("ModEntryPoint loaded");
+        }
 
         public static ConfigEntry<bool> instant3DMark;
-        private bool fpsBoost = false;
-        private float fpsBoostTime = 0.0f;
 
         internal void Awake()
         {
@@ -40,65 +48,105 @@ namespace OnixPack
             }
         }
 
-        private void Update()
-        {
-            if (fpsBoost && Time.time > fpsBoostTime)
-            {
-                fpsBoostTime += 3;
+        private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
+        private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
 
-                for (int i = 0; i < Camera.allCamerasCount; i++)
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            if (scene.name != "Splash")
+                this.FPSBoost();
+        }
+        private void PrintGameObjects()
+        {
+            string text = "";
+            foreach (GameObject obj in Resources.FindObjectsOfTypeAll<GameObject>())
+            {
+                foreach (MonoBehaviour comp in obj.GetComponents<MonoBehaviour>())
                 {
-                    Camera camera = Camera.allCameras[i];
-                    camera.gameObject.GetComponent<PostProcessingBehaviour>().enabled = false;
-                    camera.gameObject.GetComponent<HBAOControl>().enabled = false;
-                    camera.gameObject.GetComponent<FxaaComponent>().OnDisable();
-                    camera.gameObject.GetComponent<AmbientOcclusionComponent>().model.enabled = false;
-                    camera.gameObject.GetComponent<AmbientOcclusionModel>().enabled = false;
-                    camera.gameObject.GetComponent<Camera>().allowHDR = false;
-                    camera.gameObject.GetComponent<Camera>().allowMSAA = false;
-                    camera.gameObject.GetComponent<DustVolume>().enabled = false;
-                    camera.gameObject.GetComponent<RealIllumination>().enabled = false;
-                    camera.gameObject.GetComponent<ReflectionProbe>().enabled = false;
+                    //if (comp is OutlineEffect)
+                    //{
+                    //    Destroy(comp);
+                    //}
+                    text = string.Concat(new string[]
+                    {
+                            text, obj.name, " - ", comp.GetType().Name, " - tag: ", comp.tag, " <> enabled: ", comp.enabled.ToString(), "\n"
+                    });
                 }
             }
 
-            if (Input.GetKey(KeyCode.F11))
+            log.LogMessage(text);
+        }
+
+        private void FPSBoost()
+        {
+            QualitySettings.masterTextureLimit = 1;
+            QualitySettings.antiAliasing = 0;
+            QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
+            QualitySettings.shadows = ShadowQuality.Disable;
+            QualitySettings.shadowDistance = 0f;
+            QualitySettings.shadowCascades = 0;
+            QualitySettings.pixelLightCount = 0;
+            QualitySettings.vSyncCount = 0;
+            QualitySettings.blendWeights = (BlendWeights)0;
+            QualitySettings.lodBias = 0.3f;
+            QualitySettings.resolutionScalingFixedDPIFactor = 0.5f;
+            QualitySettings.maxQueuedFrames = 0;
+            QualitySettings.realtimeReflectionProbes = false;
+            QualitySettings.particleRaycastBudget = 0;
+            QualitySettings.softParticles = false;
+            QualitySettings.maximumLODLevel = 0;
+            QualitySettings.softVegetation = false;
+            QualitySettings.SetQualityLevel(0, true);
+
+            GameController.Get().IsLightsOn = false;
+
+            foreach (PostProcessingBehaviour behaviour in Resources.FindObjectsOfTypeAll<PostProcessingBehaviour>())
             {
-                QualitySettings.masterTextureLimit = 1;
-                QualitySettings.antiAliasing = 0;
-                QualitySettings.anisotropicFiltering = AnisotropicFiltering.Disable;
-                QualitySettings.shadows = ShadowQuality.Disable;
-                QualitySettings.shadowDistance = 0f;
-                QualitySettings.shadowCascades = 0;
-                QualitySettings.pixelLightCount = 0;
-                QualitySettings.vSyncCount = 0;
-                QualitySettings.blendWeights = (BlendWeights)0;
-                QualitySettings.lodBias = 0.3f;
-                QualitySettings.resolutionScalingFixedDPIFactor = 0.5f;
-                QualitySettings.maxQueuedFrames = 0;
-                QualitySettings.realtimeReflectionProbes = false;
-
-                // TODO: cakeslice.OutlineEffect eats a lot of FPS.
-                /*OutlineEffect.Instance.lineThickness = 0.5f;
-				OutlineEffect.Instance.lineIntensity = 0.05f;
-				OutlineEffect.Instance.fillAmount = 0.05f;*/
-
-                QualitySettings.particleRaycastBudget = 0;
-                QualitySettings.softParticles = false;
-                QualitySettings.maximumLODLevel = 0;
-                QualitySettings.softVegetation = false;
-                GameController.Get().IsLightsOn = false;
-                PlayerPrefs.SetInt("AmbientOcclusion", 0);
-                PlayerPrefs.SetInt("CameraEffects", 0);
-                PlayerPrefs.SetInt("MotionBlur", 0);
-
-                Resolution resolution = Screen.currentResolution;
-                Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen, resolution.refreshRate);
-
-                QualitySettings.SetQualityLevel(0, true);
-
-                fpsBoost = true;
+                behaviour.enabled = false;
+                Destroy(behaviour);
             }
         }
+
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.F11))
+                this.FPSBoost();
+        }
+
+        /* private const float TitleWidth = 240f;
+         private Vector2 m_ScrollPosition = Vector2.zero;
+
+         private void OnGUI()
+         {
+             m_ScrollPosition = GUILayout.BeginScrollView(m_ScrollPosition);
+             {
+                 GUILayout.Label("<b>Cameras</b>");
+                 GUILayout.BeginVertical("box");
+                 {
+                     for (int i = 0; i < Camera.allCamerasCount; i++)
+                     {
+                         Camera camera = Camera.allCameras[i];
+                         DrawItem("Name:", camera.ToString());
+                     }
+
+                    GameObject main = GameObject.FindGameObjectWithTag("MainCamera");
+
+                    if (main)
+                        DrawItem("Name#2:", main.ToString());
+                }
+                 GUILayout.EndVertical();
+             }
+             GUILayout.EndScrollView();
+         }
+
+         protected void DrawItem(string title, string content)
+         {
+             GUILayout.BeginHorizontal();
+             {
+                 GUILayout.Label(title, GUILayout.Width(TitleWidth));
+                 GUILayout.Label(content);
+             }
+             GUILayout.EndHorizontal();
+         } */
     }
 }
