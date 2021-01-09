@@ -1,7 +1,7 @@
 ## Mods
 * Instant 3DMark
 * FPS Boost
-    - To activate FPS boost need press __F11__ in-game.
+    - To activate FPS boost need press __F11__ in-game. (Not needed if __AutoFPSBoost__ = true)
     
 ## Installation
 1. Download and install [BepInEx](https://github.com/BepInEx/BepInEx/releases) -> [How to install BepInEx](https://bepinex.github.io/bepinex_docs/master/articles/user_guide/installation/index.html?tabs=tabid-win)
@@ -10,7 +10,6 @@
 4. After running the game once with my mod installed a configuration file will be created at
     __"\PC Building Simulator\BepInEx\config\"__
 5. Open the config __org.bepinex.plugins.OnixPack.cfg__ with an Editor or Notepad++, etc.
-6. Change the value of "__Instant3DMark__" as you desire
 
 ## License
 Copyright (C) 2021 Heyter
