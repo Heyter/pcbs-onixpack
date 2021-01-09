@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Fast3DMark.cs" />
     <Compile Include="ModEntryPoint.cs" />
+    <Compile Include="PostProcessing.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

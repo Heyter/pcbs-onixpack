@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.PostProcessing;
-using UnityEngine.SceneManagement;
 
 namespace OnixPack
 {
@@ -13,49 +12,46 @@ namespace OnixPack
     {
         const string MOD_NAME = "OnixPack";
         const string MOD_GUID = "org.bepinex.plugins." + MOD_NAME;
-        const string MOD_VERSION = "1.0.4";
+        const string MOD_VERSION = "1.0.5";
 
-        public static BepInEx.Logging.ManualLogSource log;
+        internal new static BepInEx.Logging.ManualLogSource Logger;
+        public static ConfigEntry<bool> instant3DMark, autoFPSBoost;
 
         private ModEntryPoint()
         {
-            log = Logger;
-            log.LogMessage("ModEntryPoint loaded");
-        }
+            instant3DMark = base.Config.Bind("General", "Instant3DMark", true, "Instant 3DMark");
+            autoFPSBoost = base.Config.Bind("General", "AutoFPSBoost", true, "Auto FPS Boost");
 
-        public static ConfigEntry<bool> instant3DMark;
+            Logger = base.Logger;
+            Logger.LogInfo("ModEntryPoint loaded");
+        }
 
         internal void Awake()
         {
-            instant3DMark = base.Config.Bind("General", "Instant3DMark", true, "Instant 3DMark");
+            this.FPSBoost();
 
             try
             {
                 if (FindObjectsOfType<ModEntryPoint>().Length > 1)
                 {
-                    Debug.Log(string.Format("[{0}] Another instance of {1} was instantiated. Will destroy this: {2}", MOD_NAME, typeof(ModEntryPoint), gameObject.GetInstanceID()));
+                    Logger.LogWarning(string.Format("Another instance of {0} was instantiated. Will destroy this: {1}",
+                        typeof(ModEntryPoint),
+                        gameObject.GetInstanceID()
+                    ));
                     DestroyImmediate(this);
                 }
                 else
                 {
                     new Harmony(MOD_GUID).PatchAll(System.Reflection.Assembly.GetExecutingAssembly());
-                    Debug.Log(string.Format("[{0}] Successfully patched via Harmony.", MOD_NAME));
+                    Logger.LogInfo("Successfully patched via Harmony.");
                 }
             }
             catch (Exception arg)
             {
-                Debug.Log(string.Format("[{0}] Failed to patch via Harmony. Error: {1}", MOD_NAME, arg));
+                Logger.LogError(string.Format("Failed to patch via Harmony. Error: {0}", arg));
             }
         }
 
-        private void OnEnable() => SceneManager.sceneLoaded += OnSceneLoaded;
-        private void OnDisable() => SceneManager.sceneLoaded -= OnSceneLoaded;
-
-        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-        {
-            if (scene.name != "Splash")
-                this.FPSBoost();
-        }
         private void PrintGameObjects()
         {
             string text = "";
@@ -63,10 +59,6 @@ namespace OnixPack
             {
                 foreach (MonoBehaviour comp in obj.GetComponents<MonoBehaviour>())
                 {
-                    //if (comp is OutlineEffect)
-                    //{
-                    //    Destroy(comp);
-                    //}
                     text = string.Concat(new string[]
                     {
                             text, obj.name, " - ", comp.GetType().Name, " - tag: ", comp.tag, " <> enabled: ", comp.enabled.ToString(), "\n"
@@ -74,10 +66,10 @@ namespace OnixPack
                 }
             }
 
-            log.LogMessage(text);
+            Logger.LogMessage(text);
         }
 
-        private void FPSBoost()
+        private void FPSBoost(bool bClear = false)
         {
             QualitySettings.masterTextureLimit = 1;
             QualitySettings.antiAliasing = 0;
@@ -98,19 +90,20 @@ namespace OnixPack
             QualitySettings.softVegetation = false;
             QualitySettings.SetQualityLevel(0, true);
 
-            GameController.Get().IsLightsOn = false;
-
-            foreach (PostProcessingBehaviour behaviour in Resources.FindObjectsOfTypeAll<PostProcessingBehaviour>())
+            if (bClear)
             {
-                behaviour.enabled = false;
-                Destroy(behaviour);
+                foreach (PostProcessingBehaviour behaviour in Resources.FindObjectsOfTypeAll<PostProcessingBehaviour>())
+                {
+                    behaviour.enabled = false;
+                    Destroy(behaviour);
+                }
             }
         }
 
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.F11))
-                this.FPSBoost();
+                this.FPSBoost(true);
         }
     }
 }
