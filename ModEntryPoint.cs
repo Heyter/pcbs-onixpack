@@ -10,9 +10,9 @@ namespace OnixPack
     [BepInPlugin(MOD_GUID, MOD_NAME, MOD_VERSION)]
     public class ModEntryPoint : BaseUnityPlugin
     {
-        const string MOD_NAME = "OnixPack";
-        const string MOD_GUID = "org.bepinex.plugins." + MOD_NAME;
-        const string MOD_VERSION = "1.0.5";
+        private const string MOD_NAME = "OnixPack";
+        private const string MOD_GUID = "org.bepinex.plugins." + MOD_NAME;
+        private const string MOD_VERSION = "1.0.5";
 
         internal new static BepInEx.Logging.ManualLogSource Logger;
         public static ConfigEntry<bool> instant3DMark, autoFPSBoost;
@@ -92,8 +92,10 @@ namespace OnixPack
 
             if (bClear)
             {
-                foreach (PostProcessingBehaviour behaviour in Resources.FindObjectsOfTypeAll<PostProcessingBehaviour>())
+                PostProcessingBehaviour[] behaviours = Resources.FindObjectsOfTypeAll<PostProcessingBehaviour>();
+                for (int i = 0; i < behaviours.Length; i++)
                 {
+                    PostProcessingBehaviour behaviour = behaviours[i];
                     behaviour.enabled = false;
                     Destroy(behaviour);
                 }
@@ -102,6 +104,10 @@ namespace OnixPack
 
         private void Update()
         {
+#if DEBUG
+            if (Input.GetKeyDown(KeyCode.F10))
+                PrintGameObjects();
+#endif
             if (Input.GetKeyDown(KeyCode.F11))
                 this.FPSBoost(true);
         }
